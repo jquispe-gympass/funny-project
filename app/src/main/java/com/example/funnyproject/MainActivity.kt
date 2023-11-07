@@ -7,7 +7,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import com.example.funnyproject.data.LocalLoginRepository
+import com.example.funnyproject.domain.LoginUserUseCase
+import com.example.funnyproject.domain.ValidateUserCredentialsUseCase
 import com.example.funnyproject.login.LoginScreen
+import com.example.funnyproject.login.LoginViewModel
 import com.example.funnyproject.ui.theme.FunnyProjectTheme
 
 class MainActivity : ComponentActivity() {
@@ -20,7 +24,11 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    LoginScreen()
+                    val loginViewModel = LoginViewModel(
+                        ValidateUserCredentialsUseCase(),
+                        LoginUserUseCase(LocalLoginRepository())
+                    )
+                    LoginScreen(loginViewModel)
                 }
             }
         }
