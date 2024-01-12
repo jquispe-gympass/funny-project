@@ -21,26 +21,12 @@ class LoginViewModel(
     private val _effect = MutableSharedFlow<LoginEffect>()
     val effect = _effect.asSharedFlow()
 
-    private val _email = MutableStateFlow("")
-    val email = _email.asStateFlow()
-
-    private val _password = MutableStateFlow("")
-    val password = _password.asStateFlow()
-
     // Please read about the difference between StateFlows and SharedFlows
     // https://developer.android.com/kotlin/flow/stateflow-and-sharedflow
 
     fun onEvent(loginEvent: LoginEvent) {
         when (loginEvent) {
-            is LoginEvent.OnEmailChanged -> {
-                _email.value = loginEvent.email
-            }
-            is LoginEvent.OnPasswordChanged -> {
-                _password.value = loginEvent.password
-            }
-            is LoginEvent.OnLoginAction -> {
-                login(email.value, password.value)
-            }
+            is LoginEvent.OnLoginAction -> login(loginEvent.email, loginEvent.password)
         }
     }
 

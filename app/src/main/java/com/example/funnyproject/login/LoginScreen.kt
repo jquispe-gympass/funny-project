@@ -12,15 +12,19 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.funnyproject.data.LocalLoginRepository
 import com.example.funnyproject.domain.LoginUserUseCase
 import com.example.funnyproject.domain.ValidateUserCredentialsUseCase
+import com.example.funnyproject.extensions.collectAsEffect
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -37,19 +41,23 @@ fun LoginScreen(
             SnackbarHost(hostState = snackBarHostState)
         },
         content = {
-            // Maybe issue is here..
-            val loginStatus = viewModel.effect.collectAsState(LoginEffect.Initial)
-            val responseLoginStatus = when (loginStatus.value) {
-                is LoginEffect.Success -> "Login Success"
-                is LoginEffect.Fail -> "Login failed"
-                is LoginEffect.Initial -> null
+            val email = remember { mutableStateOf(TextFieldValue()) }
+            val password = remember { mutableStateOf(TextFieldValue()) }
+
+            viewModel.effect.collectAsEffect { effect ->
+                when (effect) {
+                    LoginEffect.Initial -> TODO()
+                    LoginEffect.Success -> TODO()
+                    LoginEffect.Fail -> {
+                        showSnackBar(
+                            message = "Failed to Login",
+                            coroutineScope = scope,
+                            snackbarHostState = snackBarHostState
+                        )
+                    }
+                }
             }
 
-            showSnackBar(
-                message = responseLoginStatus,
-                coroutineScope = scope,
-                snackbarHostState = snackBarHostState
-            )
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -58,19 +66,17 @@ fun LoginScreen(
                 verticalArrangement = Arrangement.Center,
             ) {
                 TextField(
-                    value = viewModel.email.collectAsState().value,
-                    onValueChange = {
-                        viewModel.onEvent(LoginEvent.OnEmailChanged(it))
-                    }
+                    value = email.value,
+                    onValueChange = { value -> email.value = value }
                 )
                 TextField(
-                    value = viewModel.password.collectAsState().value,
-                    onValueChange = {
-                        viewModel.onEvent(LoginEvent.OnPasswordChanged(it))
-                    }
+                    value = password.value,
+                    onValueChange = { value -> password.value = value }
                 )
                 Button(onClick = {
-                    viewModel.onEvent(LoginEvent.OnLoginAction)
+                    viewModel.onEvent(
+                        LoginEvent.OnLoginAction(email.value.toString(), password.value.toString())
+                    )
                 }) {
                     Text("Login!")
                 }
