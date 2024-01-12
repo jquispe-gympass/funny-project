@@ -6,10 +6,12 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import com.example.funnyproject.data.LocalLoginRepository
+import com.example.funnyproject.domain.LoginUserUseCase
+import com.example.funnyproject.domain.ValidateUserCredentialsUseCase
+import com.example.funnyproject.login.LoginScreen
+import com.example.funnyproject.login.LoginViewModel
 import com.example.funnyproject.ui.theme.FunnyProjectTheme
 
 class MainActivity : ComponentActivity() {
@@ -22,25 +24,13 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    Greeting("Android")
+                    val loginViewModel = LoginViewModel(
+                        ValidateUserCredentialsUseCase(),
+                        LoginUserUseCase(LocalLoginRepository())
+                    )
+                    LoginScreen(loginViewModel)
                 }
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    FunnyProjectTheme {
-        Greeting("Android")
     }
 }
